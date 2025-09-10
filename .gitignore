@@ -1,0 +1,82 @@
+# Environment variables and secrets
+.env
+.env.local
+.env.*.local
+.env.production
+.env.development
+
+# Google API credentials
+credentials.json
+token.json
+data/token.json
+data/credentials.json
+data/*.json
+
+# Tuya API credentials and device data
+tinytuya.json
+tuya-raw.json
+devices.json
+snapshot.json
+tuya_devices.json
+device_config.json
+
+# Any other potential secret files
+*.key
+*.pem
+*.p12
+secrets/
+config/secrets/
+
+# Logs
+*.log
+logs/
+smart_plug.log
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+.venv/
+ENV/
+env/
+tuya_env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Docker
+.dockerignore
+
+data/heartbeat.txt

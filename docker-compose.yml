@@ -1,0 +1,74 @@
+services:
+  calendar-busy-light:
+    build: .
+    container_name: calendar-busy-light
+    restart: unless-stopped
+    network_mode: host  # Required for Tuya local network access
+    
+    environment:
+      # Tuya Device Configuration (from .env file)
+      - TUYA_DEVICE_ID=${TUYA_DEVICE_ID}
+      - TUYA_DEVICE_IP=${TUYA_DEVICE_IP}
+      - TUYA_LOCAL_KEY=${TUYA_LOCAL_KEY}
+      - TUYA_VERSION=${TUYA_VERSION:-3.3}
+      
+      # Calendar Configuration (from .env file)
+      - LEAD_TIME_MINUTES=${LEAD_TIME_MINUTES:-2}
+      - POLL_INTERVAL_SECONDS=${POLL_INTERVAL_SECONDS:-60}
+      
+      # Google Calendar Configuration
+      - GOOGLE_CREDENTIALS_PATH=/app/data/credentials.json
+      - GOOGLE_TOKEN_PATH=/app/data/token.json
+      
+      # Timezone Configuration
+      - TZ=Europe/London
+      
+      # Network resilience configuration
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+
+    volumes:
+      # Mount data directory for credentials and logs
+      - ./data:/app/data
+      # Mount logs to host for easy access
+      - ./logs:/app/logs
+      # Mount timezone data for proper local time handling
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+
+    # Run the busy light service
+    command: ["python", "calendar_busy_light.py"]
+
+    # Enhanced health check with network awareness
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket; import os; socket.create_connection(('8.8.8.8', 53), timeout=5); exit(0 if os.path.exists('/app/logs/calendar_busy_light.log') else 1)"]
+      interval: 30s
+      timeout: 15s
+      retries: 5
+      start_period: 30s
+
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    
+    # Container resource limits and sleep resilience
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
+    
+    # Additional Docker settings for stability
+    security_opt:
+      - no-new-privileges:true
+    read_only: false
+    tmpfs:
+      - /tmp:noexec,nosuid,size=50m
+    
+    # Keep container active
+    stdin_open: true
+    tty: false

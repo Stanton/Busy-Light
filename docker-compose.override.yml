@@ -1,0 +1,10 @@
+services:
+  calendar-busy-light:
+    # Override for development
+    environment:
+      - PYTHONPATH=/app
+    volumes:
+      # Mount source code for live development
+      - .:/app
+    # Override command for development
+    command: ["python", "-u", "calendar_busy_light.py"]
